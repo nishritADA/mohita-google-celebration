@@ -1,0 +1,1424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Witch Who Conquered Google - Mohita Gupta</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Crimson Text', serif;
+            background: #0d0d1a;
+            color: #e8d5b7;
+            overflow-x: hidden;
+            cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='3' fill='%23ffd700' opacity='0.8'/%3E%3C/svg%3E") 12 12, auto;
+        }
+
+        /* Sound Toggle */
+        .sound-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            background: rgba(26, 15, 46, 0.9);
+            border: 1px solid #d4a843;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.4rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        .sound-toggle:hover {
+            background: rgba(212, 168, 67, 0.2);
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(212, 168, 67, 0.3);
+        }
+
+        /* Wand sparkle trail */
+        .wand-spark {
+            position: fixed;
+            pointer-events: none;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #ffd700;
+            box-shadow: 0 0 6px #ffd700, 0 0 12px #ffa500;
+            z-index: 9998;
+            animation: sparkFade 0.8s ease-out forwards;
+        }
+
+        @keyframes sparkFade {
+            0% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(0) translateY(-20px); }
+        }
+
+        /* Stars canvas */
+        #stars-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Magic particles canvas */
+        #magic-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        /* Floating candles */
+        .candles-container {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .floating-candle {
+            position: absolute;
+            width: 4px;
+            animation: floatCandle linear infinite;
+        }
+
+        .candle-body {
+            width: 4px;
+            height: 30px;
+            background: linear-gradient(to bottom, #f5e6c8, #e8d5a0);
+            border-radius: 1px 1px 2px 2px;
+        }
+
+        .candle-flame {
+            width: 8px;
+            height: 12px;
+            background: radial-gradient(ellipse at center, #fff 0%, #ffd700 40%, #ff8c00 70%, transparent 100%);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            position: relative;
+            left: -2px;
+            top: -2px;
+            animation: flicker 0.3s ease-in-out infinite alternate;
+            box-shadow: 0 0 8px #ffd700, 0 0 20px rgba(255, 165, 0, 0.4);
+        }
+
+        @keyframes flicker {
+            0% { transform: scaleY(1) scaleX(1) rotate(-2deg); }
+            100% { transform: scaleY(1.1) scaleX(0.9) rotate(2deg); }
+        }
+
+        @keyframes floatCandle {
+            0% { transform: translateY(0) translateX(0); }
+            25% { transform: translateY(-15px) translateX(5px); }
+            50% { transform: translateY(-5px) translateX(-3px); }
+            75% { transform: translateY(-20px) translateX(4px); }
+            100% { transform: translateY(0) translateX(0); }
+        }
+
+        /* Hogwarts Letter Intro / Hero */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            text-align: center;
+            padding: 2rem;
+            background:
+                radial-gradient(ellipse at 50% 30%, rgba(26, 15, 46, 0.9) 0%, #0d0d1a 70%);
+            z-index: 2;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 900px;
+        }
+
+        .owl-delivery {
+            font-size: 1.1rem;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            color: #d4a843;
+            margin-bottom: 1.5rem;
+            font-family: 'Cinzel', serif;
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+
+        .hero-title {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: clamp(2.5rem, 7vw, 5.5rem);
+            font-weight: 900;
+            line-height: 1.15;
+            margin-bottom: 1.2rem;
+            animation: fadeInUp 1s ease-out 0.6s both;
+            color: #f0e6d0;
+            text-shadow: 0 0 40px rgba(212, 168, 67, 0.3);
+        }
+
+        .hero-title .name {
+            display: block;
+            background: linear-gradient(135deg, #ffd700, #d4a843, #f5d56e, #c9952b);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeInUp 1s ease-out 0.6s both, goldShift 4s ease infinite;
+            filter: drop-shadow(0 0 10px rgba(212, 168, 67, 0.4));
+        }
+
+        @keyframes goldShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .hero-subtitle {
+            font-family: 'Crimson Text', serif;
+            font-size: clamp(1.2rem, 3vw, 1.7rem);
+            color: #b8a88a;
+            margin-bottom: 2rem;
+            font-style: italic;
+            animation: fadeInUp 1s ease-out 0.9s both;
+        }
+
+        .google-crest {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            border: 2px solid #d4a843;
+            border-radius: 8px;
+            position: relative;
+            animation: fadeInUp 1s ease-out 1.2s both;
+            background: rgba(26, 15, 46, 0.6);
+            backdrop-filter: blur(5px);
+        }
+
+        .google-crest::before,
+        .google-crest::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #d4a843;
+        }
+
+        .google-crest::before {
+            top: -6px; left: -6px;
+            border-right: none; border-bottom: none;
+        }
+
+        .google-crest::after {
+            bottom: -6px; right: -6px;
+            border-left: none; border-top: none;
+        }
+
+        .google-crest .google-letters {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 2.8rem;
+            font-weight: 700;
+            letter-spacing: 6px;
+        }
+
+        .google-letters span:nth-child(1) { color: #4285F4; text-shadow: 0 0 15px rgba(66,133,244,0.5); }
+        .google-letters span:nth-child(2) { color: #EA4335; text-shadow: 0 0 15px rgba(234,67,53,0.5); }
+        .google-letters span:nth-child(3) { color: #FBBC05; text-shadow: 0 0 15px rgba(251,188,5,0.5); }
+        .google-letters span:nth-child(4) { color: #4285F4; text-shadow: 0 0 15px rgba(66,133,244,0.5); }
+        .google-letters span:nth-child(5) { color: #34A853; text-shadow: 0 0 15px rgba(52,168,83,0.5); }
+        .google-letters span:nth-child(6) { color: #EA4335; text-shadow: 0 0 15px rgba(234,67,53,0.5); }
+
+        .house-subtitle {
+            font-family: 'Cinzel', serif;
+            font-size: 0.85rem;
+            letter-spacing: 4px;
+            color: #d4a843;
+            margin-top: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite, fadeInUp 1s ease-out 1.8s both;
+            cursor: pointer;
+            z-index: 2;
+        }
+
+        .scroll-indicator svg { width: 30px; height: 30px; stroke: #d4a843; }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+            40% { transform: translateX(-50%) translateY(-10px); }
+            60% { transform: translateX(-50%) translateY(-5px); }
+        }
+
+        /* Parchment Divider */
+        .magic-divider {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            padding: 3rem 0;
+            position: relative;
+            z-index: 2;
+        }
+
+        .magic-divider .star {
+            font-size: 1.2rem;
+            color: #d4a843;
+            animation: twinkle 2s ease-in-out infinite;
+        }
+
+        .magic-divider .star:nth-child(2) { animation-delay: 0.3s; }
+        .magic-divider .star:nth-child(3) { animation-delay: 0.6s; font-size: 1.5rem; }
+        .magic-divider .star:nth-child(4) { animation-delay: 0.9s; }
+        .magic-divider .star:nth-child(5) { animation-delay: 1.2s; }
+
+        .magic-divider .line {
+            width: 80px;
+            height: 1px;
+            background: linear-gradient(to right, transparent, #d4a843, transparent);
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.4; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.3); }
+        }
+
+        /* Hogwarts Letter Section */
+        .letter-section {
+            padding: 4rem 2rem;
+            display: flex;
+            justify-content: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hogwarts-letter {
+            max-width: 650px;
+            background: linear-gradient(145deg, #f5e6c8, #e8d5a0, #f0ddb8);
+            border-radius: 4px;
+            padding: 3rem 2.5rem;
+            color: #2c1810;
+            position: relative;
+            box-shadow:
+                0 4px 30px rgba(0, 0, 0, 0.5),
+                inset 0 0 60px rgba(139, 90, 43, 0.1);
+            transform: rotate(-1deg);
+            opacity: 0;
+            animation: letterAppear 1s ease-out forwards;
+            animation-delay: 0.5s;
+        }
+
+        @keyframes letterAppear {
+            from { opacity: 0; transform: rotate(-1deg) translateY(30px) scale(0.95); }
+            to { opacity: 1; transform: rotate(-1deg) translateY(0) scale(1); }
+        }
+
+        .hogwarts-letter::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 28px,
+                rgba(139, 90, 43, 0.08) 28px,
+                rgba(139, 90, 43, 0.08) 29px
+            );
+            pointer-events: none;
+        }
+
+        .letter-seal {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .seal-icon {
+            display: inline-block;
+            width: 70px;
+            height: 70px;
+            background: radial-gradient(circle, #c0392b, #922B21);
+            border-radius: 50%;
+            line-height: 70px;
+            font-size: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3), inset 0 -2px 5px rgba(0,0,0,0.2);
+        }
+
+        .letter-header {
+            font-family: 'Cinzel Decorative', serif;
+            text-align: center;
+            font-size: 1.1rem;
+            color: #5c3d2e;
+            margin-bottom: 0.3rem;
+            letter-spacing: 2px;
+        }
+
+        .letter-school {
+            font-family: 'Cinzel Decorative', serif;
+            text-align: center;
+            font-size: 1.6rem;
+            color: #2c1810;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        .letter-body {
+            font-family: 'Crimson Text', serif;
+            font-size: 1.15rem;
+            line-height: 1.9;
+            color: #3d2b1f;
+            text-align: left;
+        }
+
+        .letter-body p { margin-bottom: 1rem; }
+
+        .letter-signature {
+            font-family: 'Cinzel', serif;
+            text-align: right;
+            margin-top: 1.5rem;
+            font-style: italic;
+            color: #5c3d2e;
+        }
+
+        /* Spell Cards (House themed) */
+        .spells-section {
+            padding: 5rem 2rem;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .section-title {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: clamp(1.8rem, 5vw, 3rem);
+            text-align: center;
+            margin-bottom: 3rem;
+            color: #f0e6d0;
+            text-shadow: 0 0 30px rgba(212, 168, 67, 0.2);
+        }
+
+        .spells-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .spell-card {
+            background: linear-gradient(135deg, rgba(26, 15, 46, 0.8), rgba(13, 13, 26, 0.9));
+            border: 1px solid rgba(212, 168, 67, 0.2);
+            border-radius: 12px;
+            padding: 2.5rem 2rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.4s ease;
+            opacity: 0;
+            transform: translateY(30px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .spell-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(212, 168, 67, 0.05), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .spell-card:hover::before { left: 100%; }
+
+        .spell-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 0.6s ease, transform 0.6s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        .spell-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(212, 168, 67, 0.5);
+            box-shadow: 0 10px 40px rgba(212, 168, 67, 0.1);
+        }
+
+        .spell-icon { font-size: 3rem; margin-bottom: 1rem; display: block; }
+
+        .spell-name {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+            color: #d4a843;
+        }
+
+        .spell-incantation {
+            font-family: 'Crimson Text', serif;
+            font-style: italic;
+            color: #8b7355;
+            font-size: 1rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .spell-desc {
+            color: #9a8b78;
+            line-height: 1.7;
+            font-size: 1rem;
+        }
+
+        /* Sorting Hat Section */
+        .sorting-section {
+            padding: 4rem 2rem;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            background: radial-gradient(ellipse at 50% 50%, rgba(26, 15, 46, 0.5) 0%, transparent 70%);
+        }
+
+        .sorting-hat {
+            font-size: 5rem;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+            animation: hatFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes hatFloat {
+            0%, 100% { transform: translateY(0) rotate(-3deg); }
+            50% { transform: translateY(-15px) rotate(3deg); }
+        }
+
+        .sorting-speech {
+            max-width: 700px;
+            margin: 0 auto;
+            font-family: 'Crimson Text', serif;
+            font-size: clamp(1.3rem, 3vw, 1.8rem);
+            font-style: italic;
+            line-height: 1.7;
+            color: #c9b896;
+            position: relative;
+            padding: 0 2rem;
+        }
+
+        .sorting-speech::before {
+            content: '"';
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 5rem;
+            position: absolute;
+            top: -1.5rem;
+            left: -0.5rem;
+            color: #d4a843;
+            opacity: 0.3;
+        }
+
+        .sorting-result {
+            margin-top: 2rem;
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 1.2rem;
+            color: #d4a843;
+            letter-spacing: 3px;
+        }
+
+        /* Marauder's Map Timeline */
+        .map-section {
+            padding: 5rem 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .map-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+
+        .map-step.visible {
+            opacity: 1;
+            transform: translateX(0);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .map-icon {
+            width: 50px;
+            height: 50px;
+            border: 2px solid #d4a843;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            background: rgba(26, 15, 46, 0.8);
+            position: relative;
+        }
+
+        .map-icon::after {
+            content: '';
+            position: absolute;
+            top: 52px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 1px;
+            height: 40px;
+            background: linear-gradient(to bottom, #d4a843, transparent);
+        }
+
+        .map-step:last-child .map-icon::after { display: none; }
+
+        .map-content h3 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            color: #d4a843;
+            margin-bottom: 0.3rem;
+        }
+
+        .map-content p {
+            color: #9a8b78;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        /* Patronus Message */
+        .patronus-section {
+            padding: 6rem 2rem;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            background: radial-gradient(ellipse at 50% 50%, rgba(100, 149, 237, 0.06) 0%, transparent 70%);
+        }
+
+        .patronus-glow {
+            font-size: 5rem;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+            animation: patronusGlow 3s ease-in-out infinite;
+            filter: drop-shadow(0 0 20px rgba(100, 149, 237, 0.5));
+        }
+
+        @keyframes patronusGlow {
+            0%, 100% { filter: drop-shadow(0 0 20px rgba(100, 149, 237, 0.3)); transform: scale(1); }
+            50% { filter: drop-shadow(0 0 40px rgba(100, 149, 237, 0.6)); transform: scale(1.05); }
+        }
+
+        .love-message {
+            max-width: 700px;
+            margin: 0 auto;
+            font-family: 'Crimson Text', serif;
+            font-size: 1.2rem;
+            color: #b8a88a;
+            line-height: 1.9;
+        }
+
+        .love-message .golden-snitch {
+            display: inline-block;
+            color: #ffd700;
+            animation: snitchFloat 2s ease-in-out infinite;
+        }
+
+        @keyframes snitchFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        /* Footer */
+        .footer {
+            padding: 3rem 2rem;
+            text-align: center;
+            border-top: 1px solid rgba(212, 168, 67, 0.1);
+            position: relative;
+            z-index: 2;
+        }
+
+        .footer p {
+            font-family: 'Cinzel', serif;
+            color: #5c4d3c;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+        }
+
+        .footer .mischief {
+            font-family: 'Crimson Text', serif;
+            font-style: italic;
+            color: #d4a843;
+            font-size: 1.1rem;
+            margin-top: 0.8rem;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .spells-grid { grid-template-columns: 1fr; }
+            .hogwarts-letter { padding: 2rem 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sound Toggle -->
+    <div class="sound-toggle" id="soundToggle" title="Toggle magical sounds">
+        <span id="soundIcon">&#128264;</span>
+    </div>
+
+    <!-- Stars Background -->
+    <canvas id="stars-canvas"></canvas>
+
+    <!-- Magic Particles -->
+    <canvas id="magic-canvas"></canvas>
+
+    <!-- Floating Candles -->
+    <div class="candles-container" id="candles"></div>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-content">
+            <p class="owl-delivery">&#129417; Delivered by Owl Post &#129417;</p>
+            <h1 class="hero-title">
+                Congratulations,
+                <span class="name">Mohita Gupta!</span>
+            </h1>
+            <p class="hero-subtitle">The brightest witch of her age has been accepted to</p>
+            <div class="google-crest">
+                <div class="google-letters">
+                    <span>G</span><span>o</span><span>o</span><span>g</span><span>l</span><span>e</span>
+                </div>
+                <div class="house-subtitle">School of Advanced Wizardry & Technology</div>
+            </div>
+        </div>
+        <div class="scroll-indicator" onclick="document.querySelector('.letter-section').scrollIntoView({behavior: 'smooth'})">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M7 13l5 5 5-5M7 6l5 5 5-5"/>
+            </svg>
+        </div>
+    </section>
+
+    <!-- Hogwarts-style Acceptance Letter -->
+    <section class="letter-section">
+        <div class="hogwarts-letter">
+            <div class="letter-seal">
+                <span class="seal-icon">&#9733;</span>
+            </div>
+            <div class="letter-header">GOOGLE INC.</div>
+            <div class="letter-school">Department of Magical Engineering</div>
+            <div class="letter-body">
+                <p>Dear Ms. Gupta,</p>
+                <p>We are pleased to inform you that you have been accepted at <strong>Google</strong> &mdash; the most prestigious institution of technological wizardry in the known world.</p>
+                <p>Your extraordinary talent, remarkable intellect, and powerful determination have not gone unnoticed. The Sorting Algorithm has reviewed your abilities and we are delighted to welcome you to our ranks.</p>
+                <p>Term begins immediately. Please find enclosed a list of all necessary spells, frameworks, and magical artifacts for the coming year.</p>
+                <p>We await your brilliance with great anticipation.</p>
+            </div>
+            <div class="letter-signature">
+                Yours sincerely,<br>
+                <strong>The Order of Googlers</strong><br>
+                <em>Headmaster of Search & Discovery</em>
+            </div>
+        </div>
+    </section>
+
+    <div class="magic-divider">
+        <span class="line"></span>
+        <span class="star">&#10022;</span>
+        <span class="star">&#10017;</span>
+        <span class="star">&#10038;</span>
+        <span class="star">&#10017;</span>
+        <span class="star">&#10022;</span>
+        <span class="line"></span>
+    </div>
+
+    <!-- Spell Cards -->
+    <section class="spells-section">
+        <h2 class="section-title">Spells She Mastered</h2>
+        <div class="spells-grid">
+            <div class="spell-card" data-delay="0">
+                <span class="spell-icon">&#128171;</span>
+                <h3 class="spell-name">Accio Offer Letter!</h3>
+                <p class="spell-incantation">"The Summoning Charm"</p>
+                <p class="spell-desc">With sheer brilliance and unstoppable determination, Mohita summoned the most coveted offer letter in all the land &mdash; straight from Google's enchanted headquarters.</p>
+            </div>
+            <div class="spell-card" data-delay="200">
+                <span class="spell-icon">&#9889;</span>
+                <h3 class="spell-name">Lumos Maxima!</h3>
+                <p class="spell-incantation">"The Light Charm"</p>
+                <p class="spell-desc">She illuminated every interview room with her knowledge and confidence. No dark corner of any coding challenge could withstand her radiant intellect.</p>
+            </div>
+            <div class="spell-card" data-delay="400">
+                <span class="spell-icon">&#127775;</span>
+                <h3 class="spell-name">Expecto Patronum!</h3>
+                <p class="spell-incantation">"The Patronus Charm"</p>
+                <p class="spell-desc">Powered by the happiest memories and the love of family, she conjured a force so powerful that no doubt or obstacle could stand in her way. Pure magic.</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="magic-divider">
+        <span class="line"></span>
+        <span class="star">&#10022;</span>
+        <span class="star">&#10017;</span>
+        <span class="star">&#10038;</span>
+        <span class="star">&#10017;</span>
+        <span class="star">&#10022;</span>
+        <span class="line"></span>
+    </div>
+
+    <!-- Sorting Hat -->
+    <section class="sorting-section">
+        <div class="sorting-hat">&#127913;</div>
+        <div class="sorting-speech">
+            Oh, I see brilliance most rare,<br>
+            A mind so sharp, beyond compare!<br>
+            The courage of a Gryffindor true,<br>
+            The wit of Ravenclaw shining through,<br>
+            The loyalty Hufflepuff holds dear,<br>
+            And Slytherin ambition without peer.<br>
+            For one who possesses all four &mdash;<br>
+            There's only one place in store...
+        </div>
+        <p class="sorting-result">&#10024; GOOGLE! &#10024;</p>
+    </section>
+
+    <div class="magic-divider">
+        <span class="line"></span>
+        <span class="star">&#10022;</span>
+        <span class="star">&#10017;</span>
+        <span class="star">&#10038;</span>
+        <span class="star">&#10017;</span>
+        <span class="star">&#10022;</span>
+        <span class="line"></span>
+    </div>
+
+    <!-- Marauder's Map Timeline -->
+    <section class="map-section">
+        <h2 class="section-title">The Marauder's Map</h2>
+        <p style="text-align:center; color:#8b7355; font-style:italic; margin-bottom:2.5rem; font-size:1.1rem;">"I solemnly swear that she is up to something extraordinary"</p>
+
+        <div class="map-step" data-delay="0">
+            <div class="map-icon">&#128218;</div>
+            <div class="map-content">
+                <h3>Year One &mdash; The Sorting</h3>
+                <p>Every great witch begins somewhere. Mohita chose her path with courage and conviction, knowing the journey would be long but magical.</p>
+            </div>
+        </div>
+        <div class="map-step" data-delay="200">
+            <div class="map-icon">&#9881;</div>
+            <div class="map-content">
+                <h3>The Trials &mdash; O.W.L.s & N.E.W.T.s</h3>
+                <p>Through grueling interviews, technical challenges, and tests of character &mdash; she exceeded every expectation. Outstanding marks across the board.</p>
+            </div>
+        </div>
+        <div class="map-step" data-delay="400">
+            <div class="map-icon">&#128274;</div>
+            <div class="map-content">
+                <h3>The Chamber of Secrets &mdash; Cracked</h3>
+                <p>Where others saw impossible puzzles, Mohita saw opportunities. She unlocked every secret, solved every riddle, and earned her place among the elite.</p>
+            </div>
+        </div>
+        <div class="map-step" data-delay="600">
+            <div class="map-icon">&#127942;</div>
+            <div class="map-content">
+                <h3>The Triwizard Champion</h3>
+                <p>The goblet chose her. Google chose her. Out of countless witches and wizards worldwide &mdash; Mohita Gupta emerged victorious. A true champion.</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="magic-divider">
+        <span class="line"></span>
+        <span class="star">&#10022;</span>
+        <span class="star">&#10017;</span>
+        <span class="star">&#10038;</span>
+        <span class="star">&#10017;</span>
+        <span class="star">&#10022;</span>
+        <span class="line"></span>
+    </div>
+
+    <!-- Patronus Love Message -->
+    <section class="patronus-section">
+        <div class="patronus-glow">&#129420;</div>
+        <h2 class="section-title">A Patronus of Love</h2>
+        <p class="love-message">
+            Mohita, you are the most magical person I know. Watching you work towards this dream
+            has been like watching a master witch craft the most powerful spell &mdash; every ingredient
+            measured with care, every incantation spoken with conviction.
+            <br><br>
+            You didn't just get into Google. You conquered it. Like the brightest witch of her age,
+            you proved that knowledge, heart, and perseverance are the most powerful magic of all.
+            <br><br>
+            I am so incredibly proud to be by your side on this journey.
+            You are my golden snitch <span class="golden-snitch">&#9733;</span> &mdash; the most precious and elusive prize,
+            and I'm the luckiest seeker in the world to have caught you.
+            <br><br>
+            With all my love, always and forever,<br>
+            <strong style="color:#d4a843; font-family:'Cinzel', serif; font-size:1.3rem;">Your Husband</strong>
+        </p>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Crafted with ancient magic to celebrate Mohita Gupta</p>
+        <p class="mischief">"Mischief Managed." &#128092;</p>
+    </footer>
+
+    <script>
+    // ==================== HANS ZIMMER CINEMATIC SOUND ENGINE ====================
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+    let soundEnabled = false;
+    let bgScore = null;
+    let pulseInterval = null;
+    let melodyInterval = null;
+    let buildPhase = 0;
+
+    function initAudio() {
+        if (!audioCtx) audioCtx = new AudioCtx();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+    }
+
+    // Create convolver reverb for epic space
+    function createReverb(duration, decay) {
+        const rate = audioCtx.sampleRate;
+        const length = rate * duration;
+        const impulse = audioCtx.createBuffer(2, length, rate);
+        for (let ch = 0; ch < 2; ch++) {
+            const data = impulse.getChannelData(ch);
+            for (let i = 0; i < length; i++) {
+                data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, decay);
+            }
+        }
+        const convolver = audioCtx.createConvolver();
+        convolver.buffer = impulse;
+        return convolver;
+    }
+
+    function startEpicScore() {
+        if (!audioCtx || bgScore) return;
+        const now = audioCtx.currentTime;
+        bgScore = { nodes: [] };
+
+        // Master chain: reverb -> compressor -> gain -> destination
+        const reverb = createReverb(3.5, 2.5);
+        const compressor = audioCtx.createDynamicsCompressor();
+        compressor.threshold.setValueAtTime(-20, now);
+        compressor.ratio.setValueAtTime(6, now);
+        compressor.attack.setValueAtTime(0.01, now);
+        compressor.release.setValueAtTime(0.3, now);
+
+        const masterGain = audioCtx.createGain();
+        masterGain.gain.setValueAtTime(0, now);
+        masterGain.gain.linearRampToValueAtTime(0.35, now + 6);
+
+        const dryGain = audioCtx.createGain();
+        dryGain.gain.setValueAtTime(0.7, now);
+        const wetGain = audioCtx.createGain();
+        wetGain.gain.setValueAtTime(0.4, now);
+
+        compressor.connect(dryGain);
+        compressor.connect(reverb);
+        reverb.connect(wetGain);
+        dryGain.connect(masterGain);
+        wetGain.connect(masterGain);
+        masterGain.connect(audioCtx.destination);
+        bgScore.masterGain = masterGain;
+        bgScore.compressor = compressor;
+
+        // === LAYER 1: Sub-bass foundation (Zimmer's signature rumble) ===
+        const subBass = audioCtx.createOscillator();
+        subBass.type = 'sine';
+        subBass.frequency.setValueAtTime(36.71, now); // D1
+        const subGain = audioCtx.createGain();
+        subGain.gain.setValueAtTime(0.5, now);
+        // Slow pulsing on the sub
+        const subLfo = audioCtx.createOscillator();
+        subLfo.frequency.setValueAtTime(0.08, now);
+        const subLfoGain = audioCtx.createGain();
+        subLfoGain.gain.setValueAtTime(0.15, now);
+        subLfo.connect(subLfoGain);
+        subLfoGain.connect(subGain.gain);
+        subBass.connect(subGain);
+        subGain.connect(compressor);
+        subBass.start(now);
+        subLfo.start(now);
+        bgScore.nodes.push(subBass, subLfo);
+
+        // Second sub an octave up for warmth
+        const subBass2 = audioCtx.createOscillator();
+        subBass2.type = 'sine';
+        subBass2.frequency.setValueAtTime(73.42, now); // D2
+        const sub2Gain = audioCtx.createGain();
+        sub2Gain.gain.setValueAtTime(0.25, now);
+        subBass2.connect(sub2Gain);
+        sub2Gain.connect(compressor);
+        subBass2.start(now);
+        bgScore.nodes.push(subBass2);
+
+        // === LAYER 2: Cello-like string pad (filtered sawtooth cluster) ===
+        // Dm chord: D3, F3, A3 with detuned pairs for width
+        const stringNotes = [146.83, 174.61, 220.00];
+        stringNotes.forEach((freq, i) => {
+            [-4, 0, 4].forEach(detune => {
+                const osc = audioCtx.createOscillator();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(freq, now);
+                osc.detune.setValueAtTime(detune, now);
+
+                const filter = audioCtx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(400, now);
+                filter.frequency.linearRampToValueAtTime(900, now + 15);
+                filter.Q.setValueAtTime(1.5, now);
+
+                // Slow filter sweep for movement
+                const filterLfo = audioCtx.createOscillator();
+                filterLfo.frequency.setValueAtTime(0.05 + i * 0.02, now);
+                const filterLfoGain = audioCtx.createGain();
+                filterLfoGain.gain.setValueAtTime(200, now);
+                filterLfo.connect(filterLfoGain);
+                filterLfoGain.connect(filter.frequency);
+
+                const oscGain = audioCtx.createGain();
+                oscGain.gain.setValueAtTime(0, now);
+                oscGain.gain.linearRampToValueAtTime(0.06, now + 8 + i * 2);
+
+                osc.connect(filter);
+                filter.connect(oscGain);
+                oscGain.connect(compressor);
+                osc.start(now);
+                filterLfo.start(now);
+                bgScore.nodes.push(osc, filterLfo);
+            });
+        });
+
+        // === LAYER 3: High ethereal pad (Zimmer "Time" style) ===
+        const padNotes = [293.66, 349.23, 440.00, 587.33]; // D4, F4, A4, D5
+        padNotes.forEach((freq, i) => {
+            const osc = audioCtx.createOscillator();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, now);
+
+            const filter = audioCtx.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(600, now);
+            filter.frequency.linearRampToValueAtTime(2000, now + 20);
+            filter.Q.setValueAtTime(0.7, now);
+
+            const gain = audioCtx.createGain();
+            gain.gain.setValueAtTime(0, now);
+            gain.gain.linearRampToValueAtTime(0.04, now + 10 + i * 3);
+
+            osc.connect(filter);
+            filter.connect(gain);
+            gain.connect(compressor);
+            osc.start(now);
+            bgScore.nodes.push(osc);
+        });
+
+        // === LAYER 4: Rhythmic pulse (Inception "BRAAAM" style) ===
+        bgScore.pulseGain = audioCtx.createGain();
+        bgScore.pulseGain.gain.setValueAtTime(0, now);
+        bgScore.pulseGain.gain.linearRampToValueAtTime(0.12, now + 12);
+        bgScore.pulseGain.connect(compressor);
+
+        let pulseTime = 0;
+        pulseInterval = setInterval(() => {
+            if (!soundEnabled || !audioCtx) return;
+            pulseTime++;
+            const t = audioCtx.currentTime;
+
+            // Deep brass-like hit
+            const osc1 = audioCtx.createOscillator();
+            osc1.type = 'sawtooth';
+            osc1.frequency.setValueAtTime(73.42, t); // D2
+            const osc2 = audioCtx.createOscillator();
+            osc2.type = 'sawtooth';
+            osc2.frequency.setValueAtTime(73.42 * 1.002, t); // Slight detune
+
+            const hitFilter = audioCtx.createBiquadFilter();
+            hitFilter.type = 'lowpass';
+            hitFilter.frequency.setValueAtTime(300, t);
+            hitFilter.frequency.exponentialRampToValueAtTime(80, t + 1.8);
+
+            const hitGain = audioCtx.createGain();
+            hitGain.gain.setValueAtTime(0.4, t);
+            hitGain.gain.exponentialRampToValueAtTime(0.001, t + 2.0);
+
+            osc1.connect(hitFilter);
+            osc2.connect(hitFilter);
+            hitFilter.connect(hitGain);
+            hitGain.connect(bgScore.pulseGain);
+
+            osc1.start(t);
+            osc2.start(t);
+            osc1.stop(t + 2.2);
+            osc2.stop(t + 2.2);
+
+            // Every 4th pulse, add the higher octave "BRAAAM"
+            if (pulseTime % 4 === 0) {
+                const braaam = audioCtx.createOscillator();
+                braaam.type = 'sawtooth';
+                braaam.frequency.setValueAtTime(146.83, t);
+                const braaamFilter = audioCtx.createBiquadFilter();
+                braaamFilter.type = 'lowpass';
+                braaamFilter.frequency.setValueAtTime(500, t);
+                braaamFilter.frequency.exponentialRampToValueAtTime(100, t + 2.5);
+                const braaamGain = audioCtx.createGain();
+                braaamGain.gain.setValueAtTime(0.25, t);
+                braaamGain.gain.exponentialRampToValueAtTime(0.001, t + 2.5);
+                braaam.connect(braaamFilter);
+                braaamFilter.connect(braaamGain);
+                braaamGain.connect(bgScore.pulseGain);
+                braaam.start(t);
+                braaam.stop(t + 2.8);
+            }
+        }, 2400); // Slow epic pulse
+
+        // === LAYER 5: Melodic motif (plays a simple rising figure periodically) ===
+        // Like the "Time" piano motif but with soft synth tones
+        const motifNotes = [
+            [293.66, 0.8], [349.23, 0.8], [440.00, 1.2], [392.00, 0.8], // D4 F4 A4 G4
+            [349.23, 0.8], [440.00, 0.8], [587.33, 1.6], [523.25, 0.8], // F4 A4 D5 C5
+            [440.00, 1.2], [349.23, 0.8], [293.66, 2.0],                 // A4 F4 D4
+        ];
+        let motifIndex = 0;
+        let motifTimeout = null;
+
+        function playNextNote() {
+            if (!soundEnabled || !audioCtx) { motifTimeout = setTimeout(playNextNote, 3000); return; }
+            const t = audioCtx.currentTime;
+            const [freq, dur] = motifNotes[motifIndex % motifNotes.length];
+            motifIndex++;
+
+            // Sine + triangle layered for a warm bell-like tone
+            ['sine', 'triangle'].forEach((type, li) => {
+                const osc = audioCtx.createOscillator();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, t);
+                if (li === 1) osc.detune.setValueAtTime(3, t);
+
+                const env = audioCtx.createGain();
+                env.gain.setValueAtTime(0, t);
+                env.gain.linearRampToValueAtTime(li === 0 ? 0.08 : 0.03, t + 0.08);
+                env.gain.exponentialRampToValueAtTime(li === 0 ? 0.03 : 0.01, t + dur * 0.5);
+                env.gain.exponentialRampToValueAtTime(0.001, t + dur + 0.5);
+
+                const filter = audioCtx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(2000, t);
+                filter.frequency.exponentialRampToValueAtTime(800, t + dur);
+
+                osc.connect(filter);
+                filter.connect(env);
+                env.connect(compressor);
+                osc.start(t);
+                osc.stop(t + dur + 0.8);
+            });
+
+            // Pause after full motif cycle
+            const isEnd = motifIndex % motifNotes.length === 0;
+            const nextDelay = isEnd ? 6000 : dur * 1000;
+            motifTimeout = setTimeout(playNextNote, nextDelay);
+        }
+
+        // Start melody after 8 seconds of drone buildup
+        bgScore.melodyStart = setTimeout(() => playNextNote(), 8000);
+    }
+
+    function stopEpicScore() {
+        if (!bgScore) return;
+        const now = audioCtx.currentTime;
+        bgScore.masterGain.gain.linearRampToValueAtTime(0, now + 3);
+        if (pulseInterval) { clearInterval(pulseInterval); pulseInterval = null; }
+        if (bgScore.melodyStart) clearTimeout(bgScore.melodyStart);
+        setTimeout(() => {
+            bgScore.nodes.forEach(n => { try { n.stop(); } catch(e){} });
+            bgScore = null;
+        }, 3500);
+    }
+
+    // Epic brass hit for scroll reveals (mini BRAAAM)
+    function playEpicHit() {
+        if (!audioCtx || !soundEnabled) return;
+        const t = audioCtx.currentTime;
+        const masterGain = audioCtx.createGain();
+        masterGain.gain.setValueAtTime(0.15, t);
+        masterGain.gain.exponentialRampToValueAtTime(0.001, t + 1.5);
+        masterGain.connect(audioCtx.destination);
+
+        [73.42, 146.83, 110.00].forEach((freq, i) => {
+            const osc = audioCtx.createOscillator();
+            osc.type = i < 2 ? 'sawtooth' : 'square';
+            osc.frequency.setValueAtTime(freq, t);
+            const filter = audioCtx.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(400, t);
+            filter.frequency.exponentialRampToValueAtTime(100, t + 1.2);
+            const g = audioCtx.createGain();
+            g.gain.setValueAtTime(0.3 - i * 0.08, t);
+            g.gain.exponentialRampToValueAtTime(0.001, t + 1.2);
+            osc.connect(filter);
+            filter.connect(g);
+            g.connect(masterGain);
+            osc.start(t);
+            osc.stop(t + 1.5);
+        });
+    }
+
+    // Ethereal chime for timeline reveals
+    function playChime() {
+        if (!audioCtx || !soundEnabled) return;
+        const t = audioCtx.currentTime;
+        const freq = [587.33, 659.25, 783.99, 880.00][Math.floor(Math.random() * 4)];
+        const osc = audioCtx.createOscillator();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, t);
+        const g = audioCtx.createGain();
+        g.gain.setValueAtTime(0.06, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + 1.5);
+        osc.connect(g);
+        g.connect(audioCtx.destination);
+        osc.start(t);
+        osc.stop(t + 1.8);
+    }
+
+    // Opening fanfare (plays once on enable)
+    function playFanfare() {
+        if (!audioCtx || !soundEnabled) return;
+        const t = audioCtx.currentTime;
+        const fanfareNotes = [
+            [146.83, 0], [174.61, 0], [220.00, 0], // Dm chord hit
+            [293.66, 0.05], [349.23, 0.05], [440.00, 0.05], // octave up
+        ];
+        const masterG = audioCtx.createGain();
+        masterG.gain.setValueAtTime(0.2, t);
+        masterG.gain.exponentialRampToValueAtTime(0.001, t + 3);
+        masterG.connect(audioCtx.destination);
+
+        fanfareNotes.forEach(([freq, delay]) => {
+            const osc = audioCtx.createOscillator();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(freq, t + delay);
+            const filter = audioCtx.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(600, t + delay);
+            filter.frequency.exponentialRampToValueAtTime(150, t + delay + 2.5);
+            const g = audioCtx.createGain();
+            g.gain.setValueAtTime(0.2, t + delay);
+            g.gain.exponentialRampToValueAtTime(0.001, t + delay + 2.5);
+            osc.connect(filter);
+            filter.connect(g);
+            g.connect(masterG);
+            osc.start(t + delay);
+            osc.stop(t + delay + 3);
+        });
+    }
+
+    // Sound toggle
+    const soundToggle = document.getElementById('soundToggle');
+    const soundIcon = document.getElementById('soundIcon');
+
+    soundToggle.addEventListener('click', () => {
+        initAudio();
+        soundEnabled = !soundEnabled;
+        soundIcon.innerHTML = soundEnabled ? '&#128266;' : '&#128264;';
+
+        if (soundEnabled) {
+            startEpicScore();
+            playFanfare();
+        } else {
+            stopEpicScore();
+        }
+    });
+
+    // ==================== STARS CANVAS ====================
+    const starsCanvas = document.getElementById('stars-canvas');
+    const starsCtx = starsCanvas.getContext('2d');
+
+    function resizeStars() {
+        starsCanvas.width = window.innerWidth;
+        starsCanvas.height = window.innerHeight;
+    }
+    resizeStars();
+
+    const stars = [];
+    for (let i = 0; i < 200; i++) {
+        stars.push({
+            x: Math.random() * starsCanvas.width,
+            y: Math.random() * starsCanvas.height,
+            size: Math.random() * 2 + 0.5,
+            twinkleSpeed: Math.random() * 0.02 + 0.005,
+            phase: Math.random() * Math.PI * 2,
+            color: Math.random() > 0.8 ? '#ffd700' : (Math.random() > 0.5 ? '#e8d5b7' : '#fff')
+        });
+    }
+
+    // Shooting stars
+    const shootingStars = [];
+    function createShootingStar() {
+        shootingStars.push({
+            x: Math.random() * starsCanvas.width * 0.7,
+            y: Math.random() * starsCanvas.height * 0.4,
+            length: Math.random() * 80 + 40,
+            speed: Math.random() * 8 + 6,
+            angle: Math.PI / 4 + Math.random() * 0.3,
+            opacity: 1,
+            life: 0
+        });
+    }
+
+    setInterval(() => { if (Math.random() > 0.6) createShootingStar(); }, 3000);
+
+    let starsTime = 0;
+    function animateStars() {
+        starsCtx.clearRect(0, 0, starsCanvas.width, starsCanvas.height);
+        starsTime += 0.016;
+
+        stars.forEach(star => {
+            const twinkle = Math.sin(starsTime * star.twinkleSpeed * 60 + star.phase) * 0.5 + 0.5;
+            starsCtx.beginPath();
+            starsCtx.arc(star.x, star.y, star.size * twinkle, 0, Math.PI * 2);
+            starsCtx.fillStyle = star.color;
+            starsCtx.globalAlpha = 0.3 + twinkle * 0.7;
+            starsCtx.fill();
+        });
+
+        starsCtx.globalAlpha = 1;
+        shootingStars.forEach((ss, i) => {
+            ss.x += Math.cos(ss.angle) * ss.speed;
+            ss.y += Math.sin(ss.angle) * ss.speed;
+            ss.life++;
+            ss.opacity = Math.max(0, 1 - ss.life / 30);
+
+            if (ss.opacity <= 0) { shootingStars.splice(i, 1); return; }
+
+            const gradient = starsCtx.createLinearGradient(
+                ss.x, ss.y,
+                ss.x - Math.cos(ss.angle) * ss.length,
+                ss.y - Math.sin(ss.angle) * ss.length
+            );
+            gradient.addColorStop(0, `rgba(255, 215, 0, ${ss.opacity})`);
+            gradient.addColorStop(1, 'rgba(255, 215, 0, 0)');
+            starsCtx.beginPath();
+            starsCtx.moveTo(ss.x, ss.y);
+            starsCtx.lineTo(
+                ss.x - Math.cos(ss.angle) * ss.length,
+                ss.y - Math.sin(ss.angle) * ss.length
+            );
+            starsCtx.strokeStyle = gradient;
+            starsCtx.lineWidth = 2;
+            starsCtx.stroke();
+        });
+
+        requestAnimationFrame(animateStars);
+    }
+    animateStars();
+
+    // ==================== MAGIC PARTICLES (golden dust on canvas) ====================
+    const magicCanvas = document.getElementById('magic-canvas');
+    const magicCtx = magicCanvas.getContext('2d');
+
+    function resizeMagic() {
+        magicCanvas.width = window.innerWidth;
+        magicCanvas.height = window.innerHeight;
+    }
+    resizeMagic();
+
+    const magicParticles = [];
+    for (let i = 0; i < 40; i++) {
+        magicParticles.push({
+            x: Math.random() * magicCanvas.width,
+            y: Math.random() * magicCanvas.height,
+            size: Math.random() * 3 + 1,
+            speedX: (Math.random() - 0.5) * 0.5,
+            speedY: -Math.random() * 0.5 - 0.2,
+            opacity: Math.random() * 0.4 + 0.1,
+            phase: Math.random() * Math.PI * 2
+        });
+    }
+
+    function animateMagic() {
+        magicCtx.clearRect(0, 0, magicCanvas.width, magicCanvas.height);
+        magicParticles.forEach(p => {
+            p.x += p.speedX + Math.sin(Date.now() * 0.001 + p.phase) * 0.3;
+            p.y += p.speedY;
+            if (p.y < -10) { p.y = magicCanvas.height + 10; p.x = Math.random() * magicCanvas.width; }
+            if (p.x < -10) p.x = magicCanvas.width + 10;
+            if (p.x > magicCanvas.width + 10) p.x = -10;
+
+            magicCtx.beginPath();
+            magicCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            magicCtx.fillStyle = `rgba(255, 215, 0, ${p.opacity})`;
+            magicCtx.shadowColor = '#ffd700';
+            magicCtx.shadowBlur = 8;
+            magicCtx.fill();
+            magicCtx.shadowBlur = 0;
+        });
+        requestAnimationFrame(animateMagic);
+    }
+    animateMagic();
+
+    // ==================== FLOATING CANDLES ====================
+    const candlesContainer = document.getElementById('candles');
+    for (let i = 0; i < 15; i++) {
+        const candle = document.createElement('div');
+        candle.classList.add('floating-candle');
+        candle.style.left = (5 + Math.random() * 90) + '%';
+        candle.style.top = (5 + Math.random() * 40) + '%';
+        candle.style.animationDuration = (4 + Math.random() * 4) + 's';
+        candle.style.animationDelay = (Math.random() * 3) + 's';
+        candle.style.opacity = 0.4 + Math.random() * 0.4;
+        candle.innerHTML = '<div class="candle-flame"></div><div class="candle-body"></div>';
+        candlesContainer.appendChild(candle);
+    }
+
+    // ==================== WAND TRAIL (mouse sparkles) ====================
+    document.addEventListener('mousemove', (e) => {
+        if (Math.random() > 0.6) {
+            const spark = document.createElement('div');
+            spark.classList.add('wand-spark');
+            spark.style.left = (e.clientX + (Math.random() - 0.5) * 10) + 'px';
+            spark.style.top = (e.clientY + (Math.random() - 0.5) * 10) + 'px';
+            const colors = ['#ffd700', '#ffa500', '#fff', '#d4a843'];
+            spark.style.background = colors[Math.floor(Math.random() * colors.length)];
+            document.body.appendChild(spark);
+            setTimeout(() => spark.remove(), 800);
+        }
+    });
+
+    // ==================== SCROLL ANIMATIONS WITH SOUND ====================
+    const observerOptions = { threshold: 0.2, rootMargin: '0px 0px -50px 0px' };
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const delay = entry.target.getAttribute('data-delay') || 0;
+                setTimeout(() => {
+                    entry.target.classList.add('visible');
+                    if (entry.target.classList.contains('spell-card')) playEpicHit();
+                    if (entry.target.classList.contains('map-step')) playChime();
+                }, delay);
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.spell-card, .map-step').forEach(el => observer.observe(el));
+
+    // ==================== RESIZE ====================
+    window.addEventListener('resize', () => { resizeStars(); resizeMagic(); });
+    </script>
+</body>
+</html>
